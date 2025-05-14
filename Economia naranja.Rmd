@@ -1,0 +1,73 @@
+---
+title: "Proyecto Platzi Economia Naranja F"
+author: "jhonfypy Frddy"
+date: "2024-11-12"
+output: html_document
+---
+
+```{r}
+orangeec <- read.csv(("C:/Users/JHON FREDY/Documents/Data R/orangeec.csv"))
+data(orangeec)
+summary(orangeec)
+```
+Parece que hay una correlació entre aporte economia naramja y aporte al pib 
+```{r}
+pairs(orangeec[,6:10])
+```
+```{r}
+library(ggplot2)
+```
+```{r}
+colnames(orangeec)
+```
+```{r}
+ggplot() +
+  geom_histogram(data = orangeec,
+                 aes(x = Internet.penetration...population),  
+                 fill = 'yellow', color = 'red', 
+                 binwidth = 5) +
+  labs(x = 'Penetracion internet(%)Poblacion',
+       y = 'Cantidad de países',
+       title = 'Penetracion internet en países LATAM') +
+  theme(legend.position = 'none') +
+  theme(panel.background = element_blank(),
+        panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank())
+```
+```{r}
+library(dplyr)
+```
+```{r}
+economy <- mean(orangeec$`GDP.PC`)
+economy
+```
+```{r}
+orangeec <- orangeec %>%
+  mutate(Strong_economy = ifelse(`GDP.PC` < economy,
+         'Por debajo promedio pib per cápital',
+         'Sobre-arriba promedio pib per cápital'))
+```
+```{r}
+ggplot(orangeec, aes(x= `Strong_economy`, y = Creat.Ind...GDP,
+                     fill=`Strong_economy`))+
+  geom_boxplot(alpha=0.4)+                 
+  labs(x= 'Tipo de pais', y = 'Aporte economia al pib',
+       title = 'Aporte E.N en PIB Paises Latam con alto y bajo pib per cápital')+
+  theme(legend.position = 'none') +
+  theme(panel.background = element_blank(),
+        panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank())
+```
+El boxplot indica que los pises sobre el promedio en paises per capita, tienen mucho mas alta en cueanto a los aportes de la economia naranja al pib del pais. OJO, confirmar con desviacion standar. 
+```{r}
+TopNaranjas <- orangeec %>%
+  filter(Country %in% c('Mexico', 'Panama', 'Argentina', 'Colombia', 'Brazil', 'Paraguay'))
+TopNaranjas
+```
+```{r}
+ggplot(TopNaranjas, aes(x=`Education invest % GDP`,
+                        y=`Services % GDP`, size=`GDP PC`))+
+  geom_point()+
+  facet_wrap(~`Country`)
+```
+
